@@ -103,10 +103,12 @@ module.exports = function SumoLogger( opts ) {
             method: 'POST',
             url: collectorEndpoint,
             body
-        }, ( error, response ) => {
-            const failed = !!error ||
-                           response.status < 200 ||
-                           response.status >= 400;
+        }, ( error, response, body ) => {
+            let failed = false;
+            if ( error || !response || response.statusCode >= 400 ) {
+                failed = true;
+                console.error( error, response && response.statusCode, body );
+            }
 
             if ( !failed ) {
                 unsynced.splice( 0, numBeingSent );
